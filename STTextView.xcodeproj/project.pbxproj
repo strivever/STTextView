@@ -13,6 +13,8 @@
 		D3A1848A1ED2D54600447F87 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3A184881ED2D54600447F87 /* Main.storyboard */; };
 		D3A1848C1ED2D54700447F87 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A1848B1ED2D54700447F87 /* Assets.xcassets */; };
 		D3A1848F1ED2D54700447F87 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D3A1848D1ED2D54700447F87 /* LaunchScreen.storyboard */; };
+		D3A1849C1ED2FC0000447F87 /* UIView+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A1849B1ED2FC0000447F87 /* UIView+Extension.m */; };
+		D3D470661ED4239D00C15365 /* STTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D470651ED4239D00C15365 /* STTextView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,10 @@
 		D3A1848B1ED2D54700447F87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D3A1848E1ED2D54700447F87 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D3A184901ED2D54700447F87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D3A1849A1ED2FC0000447F87 /* UIView+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extension.h"; sourceTree = "<group>"; };
+		D3A1849B1ED2FC0000447F87 /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
+		D3D470641ED4239D00C15365 /* STTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTextView.h; sourceTree = "<group>"; };
+		D3D470651ED4239D00C15365 /* STTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTextView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,8 @@
 		D3A1847E1ED2D54600447F87 /* STTextView */ = {
 			isa = PBXGroup;
 			children = (
+				D3D470631ED4239D00C15365 /* STTextView */,
+				D3A184991ED2FC0000447F87 /* UIViewExtention */,
 				D3A184821ED2D54600447F87 /* AppDelegate.h */,
 				D3A184831ED2D54600447F87 /* AppDelegate.m */,
 				D3A184851ED2D54600447F87 /* ViewController.h */,
@@ -77,6 +85,24 @@
 				D3A184801ED2D54600447F87 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D3A184991ED2FC0000447F87 /* UIViewExtention */ = {
+			isa = PBXGroup;
+			children = (
+				D3A1849A1ED2FC0000447F87 /* UIView+Extension.h */,
+				D3A1849B1ED2FC0000447F87 /* UIView+Extension.m */,
+			);
+			path = UIViewExtention;
+			sourceTree = "<group>";
+		};
+		D3D470631ED4239D00C15365 /* STTextView */ = {
+			isa = PBXGroup;
+			children = (
+				D3D470641ED4239D00C15365 /* STTextView.h */,
+				D3D470651ED4239D00C15365 /* STTextView.m */,
+			);
+			path = STTextView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,8 +177,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3A1849C1ED2FC0000447F87 /* UIView+Extension.m in Sources */,
 				D3A184871ED2D54600447F87 /* ViewController.m in Sources */,
 				D3A184841ED2D54600447F87 /* AppDelegate.m in Sources */,
+				D3D470661ED4239D00C15365 /* STTextView.m in Sources */,
 				D3A184811ED2D54600447F87 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,6 +338,7 @@
 				D3A184951ED2D54700447F87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

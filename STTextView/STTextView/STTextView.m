@@ -17,8 +17,61 @@
 - (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UITextViewTextDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:UITextViewTextDidEndEditingNotification object:nil];
-    
 }
+- (instancetype)initWithCoder:(NSCoder *)aDecoder{
+    if (self = [super initWithCoder:aDecoder]) {
+        [self setUpView];
+    }
+    return self;
+}
+- (instancetype)initWithFrame:(CGRect)frame{
+    if (self = [super initWithFrame:frame]) {
+        [self setUpView];
+    }
+    return self;
+}
+#pragma mark ---setter
+- (void)setTextContainerInset:(UIEdgeInsets)textContainerInset{
+    //调整text内容边距
+    [super setTextContainerInset:textContainerInset];
+    self.placeHolderLabelInsets = UIEdgeInsetsMake(textContainerInset.top, textContainerInset.left + 2, textContainerInset.bottom, textContainerInset.right + 2);
+    [self setNeedsLayout];
+}
+- (void)setText:(NSString *)text{
+    [super setText:text];
+    [self textViewDidChange:nil];
+}
+- (void)setFont:(UIFont *)font{
+    [super setFont:font];
+    self.placeHolderLabel.font  = font;
+}
+- (void)setPlaceholder:(NSString *)placeholder{
+    _placeholder = placeholder;
+    self.placeHolderLabel.text = _placeholder;
+}
+- (void)setPlaceholderColor:(UIColor *)placeholderColor{
+    _placeholderColor = placeholderColor;
+    self.placeHolderLabel.textColor = _placeholderColor;
+}
+- (void)setIsAutoHeight:(BOOL)isAutoHeight{
+    _isAutoHeight = isAutoHeight;
+    if (_isAutoHeight) {
+        self.scrollEnabled = NO;
+    }
+}
+- (void)setPlaceHolderLabelInsets:(UIEdgeInsets)placeHolderLabelInsets{
+    _placeHolderLabelInsets = placeHolderLabelInsets;
+    [self layoutSubviews];
+}
+
+- (void)resetPlaceHolderLabelState{
+    if ([self hasText]) {
+        self.placeHolderLabel.hidden = YES;
+    }else{
+        self.placeHolderLabel.hidden = NO;
+    }
+}
+#pragma mark ---UI
 - (void)setUpView{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(textViewDidEndEditing:) name:UITextViewTextDidEndEditingNotification object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(textViewDidChange:) name:UITextViewTextDidChangeNotification object:nil];
@@ -36,50 +89,43 @@
     self.minHeight = 30;
     NSLog(@"self.textContainerInset--->%@\n---------->%@\nself.scrollIndicatorInsets----------->%@",NSStringFromUIEdgeInsets(self.textContainerInset),NSStringFromUIEdgeInsets(self.contentInset),NSStringFromUIEdgeInsets(self.scrollIndicatorInsets));
 }
-- (instancetype)initWithCoder:(NSCoder *)aDecoder{
-    if (self = [super initWithCoder:aDecoder]) {
-        [self setUpView];
-    }
-    return self;
-}
-- (instancetype)initWithFrame:(CGRect)frame{
-    if (self = [super initWithFrame:frame]) {
-        [self setUpView];
-    }
-    return self;
-}
-- (void)setTextContainerInset:(UIEdgeInsets)textContainerInset{
-    //调整text内容边距
-    [super setTextContainerInset:textContainerInset];
-    self.placeHolderLabelInsets = UIEdgeInsetsMake(textContainerInset.top, textContainerInset.left + 2, textContainerInset.bottom, textContainerInset.right + 2);
-    [self setNeedsLayout];
-}
-- (void)setPlaceHolderLabelInsets:(UIEdgeInsets)placeHolderLabelInsets{
-    _placeHolderLabelInsets = placeHolderLabelInsets;
-    [self layoutSubviews];
-}
-- (void)setText:(NSString *)text{
-    [super setText:text];
-    [self textViewDidChange:nil];
-}
 - (void)layoutSubviews{
     [super layoutSubviews];
     _placeHolderLabel.frame = CGRectMake(_placeHolderLabelInsets.left, _placeHolderLabelInsets.top, self.frame.size.width - _placeHolderLabelInsets.left - _placeHolderLabelInsets.right, 0);
     [_placeHolderLabel sizeToFit];
     if (_placeHolderLabel.hidden == NO && self.isAutoHeight) {
-        if (_placeHolderLabel.height > self.height) {
-            self.height = _placeHolderLabel.height + (_placeHolderLabelInsets.top + _placeHolderLabelInsets.bottom);
+        CGFloat placeHolderHeight = _placeHolderLabel.height + (_placeHolderLabelInsets.top + _placeHolderLabelInsets.bottom);
+        if (placeHolderHeight > self.height) {
+            self.height = placeHolderHeight;
         }
     }
     
 }
-- (void)resetPlaceHolderLabelState{
-    if ([self hasText]) {
-        self.placeHolderLabel.hidden = YES;
-    }else{
-        self.placeHolderLabel.hidden = NO;
-    }
+
+#pragma mark ---NSNotificationEvent
+- (void)textViewDidEndEditing:(NSNotification *)notification{
+    
 }
+- (void)textViewDidChange:(NSNotification *)notification{
+    if (self.text.length == 0) {
+        self.placeHolderLabel.text = _placeholder;
+        self.placeHolderLabel.hidden = NO;
+        [self setNeedsLayout];
+    }else{
+        self.placeHolderLabel.hidden = YES;
+    }
+    if(self.markedTextRange == nil){
+        //没有候选字符
+        [self st_setAttributedString];
+        self.textDidChangedBlock ? self.textDidChangedBlock(self.text) : nil;
+    };
+    
+    [self st_autoHeight];
+    [self resetPlaceHolderLabelState];
+    
+}
+
+#pragma mark --- function
 //设置属性字符串
 - (void)st_setAttributedString{
     //设置了间距
@@ -108,8 +154,10 @@
         if (self.text.length == 0){
             height = self.minHeight;
             self.height = self.minHeight;
+            //高度变化
+            self.textViewAutoHeight ? self.textViewAutoHeight(self.height) : nil;
         }else{
-             height = [self att_height];
+            height = [self att_height];
             if (height != self.height) {
                 if (height > self.maxHeight) {
                     self.height = self.maxHeight;
@@ -118,13 +166,13 @@
                     self.height = self.minHeight;
                     self.scrollEnabled = NO;
                 }else{
-                    self.height = height;
                     self.scrollEnabled = NO;
+                    self.height = height;
                 }
+                //高度变化
+                self.textViewAutoHeight ? self.textViewAutoHeight(self.height) : nil;
             }
         }
-        //高度变化
-        self.textViewAutoHeight ? self.textViewAutoHeight(self.height) : nil;
     }
 }
 
@@ -143,31 +191,4 @@
         return height;
     }
 }
-#pragma mark ---setter
-- (void)setPlaceholder:(NSString *)placeholder{
-    _placeholder = placeholder;
-    self.placeHolderLabel.text = _placeholder;
-}
-#pragma mark ---NSNotificationEvent
-- (void)textViewDidEndEditing:(NSNotification *)notification{
-}
-- (void)textViewDidChange:(NSNotification *)notification{
-    if (self.text.length == 0) {
-        self.placeHolderLabel.text = _placeholder;
-        self.placeHolderLabel.hidden = NO;
-        [self setNeedsLayout];
-    }else{
-        self.placeHolderLabel.hidden = YES;
-    }
-    if(self.markedTextRange == nil){
-        //没有候选字符
-        [self st_setAttributedString];
-        self.textDidChangedBlock ? self.textDidChangedBlock(self.attributedText.string) : nil;
-    };
-    [self st_autoHeight];
-    [self resetPlaceHolderLabelState];
-    
-}
-
-
 @end
